@@ -1,6 +1,16 @@
 import { GenerationCommonConfigSchema, ModelReference } from "genkit";
-import { modelRef } from "genkit/model";
+import { ModelInfo, modelRef } from "genkit/model";
 import { z } from "zod";
+
+export const MODELS_SUPPORTING_OPENAI_RESPONSE_FORMAT = [
+  "whyhow-ai/PatientSeek",
+];
+
+export interface ModelDefinition {
+  name: string;
+  info: ModelInfo;
+  configSchema?: any;
+}
 
 export const DeepSeekConfigSchema = GenerationCommonConfigSchema.extend({
   frequencyPenalty: z.number().min(-2).max(2).optional(),
@@ -16,11 +26,11 @@ export const PatientSeekChat = modelRef({
   info: {
     label: "Whyhow - PatientSeek",
     supports: {
-      media: false, 
+      media: false,
       output: ["text", "json"],
       multiturn: true,
       systemRole: true,
-      tools: true,
+      tools: false,
     },
   },
   configSchema: DeepSeekConfigSchema,
