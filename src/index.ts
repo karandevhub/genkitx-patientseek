@@ -1,37 +1,31 @@
 import { Genkit } from "genkit";
 import { genkitPlugin } from "genkit/plugin";
-import { OpenAI } from 'openai';
-import {
-  deepseekChat,
-  deepseekReasoner,
-  whyhowPatientSeek,
-  SUPPORTED_DEEPSEEK_MODELS
-} from "./models";
+import { OpenAI } from "openai";
+import { PatientSeekChat, SUPPORTED_DEEPSEEK_MODELS } from "./models";
 import { deepseekRunner } from "./runner";
-
+import * as dotenv from "dotenv";
+dotenv.config();
 export interface PluginOptions {
   apiKey?: string;
   baseURL?: string;
 }
-export {
-  deepseekChat,
-  deepseekReasoner, 
-  whyhowPatientSeek
-};
+export { PatientSeekChat };
 
-export const deepseek = (options?: PluginOptions) =>
+export const PatientSeek = (options?: PluginOptions) =>
   genkitPlugin("deepseek", async (ai: Genkit) => {
-    const apiKey = options?.apiKey || process.env.DEEPSEEK_API_KEY;
+    const apiKey = options?.apiKey || process.env.PATIENT_SEEK_API_KEY;
     if (!apiKey) {
-      throw new Error("Deepseek API key is required. Pass plugin options or set DEEPSEEK_API_KEY environment variable.");
+      throw new Error(
+        "PatientSeek API key is required. Pass plugin options or set PATIENT_SEEK_API_KEY environment variable."
+      );
     }
 
-    const baseURL = options?.baseURL || process.env.DEEPSEEK_API_URL || 'https://api.deepseek.com';
+    const baseURL =
+      options?.baseURL ||
+      process.env.PATIENT_SEEK_API_URL ||
+      "https://sjp8h5vzufpc6woi.us-east-1.aws.endpoints.huggingface.cloud/v1/";
 
-
-    console.log("Deepseek API URL:", baseURL);
-    
-    const client = new OpenAI({apiKey, baseURL});
+    const client = new OpenAI({ apiKey, baseURL });
     for (const name of Object.keys(SUPPORTED_DEEPSEEK_MODELS)) {
       const model = SUPPORTED_DEEPSEEK_MODELS[name];
       ai.defineModel(
@@ -45,4 +39,4 @@ export const deepseek = (options?: PluginOptions) =>
     }
   });
 
-export default deepseek;
+export default PatientSeek;

@@ -11,8 +11,11 @@ export const DeepSeekCandidateSchema = z.object({
   index: z.number(),
   finishReason: z.string(),
   message: z.object({
-    role: z.literal('assistant'),
+    role: z.literal('model'),
     text: z.string(),
+    content: z.array(
+      z.object({ text: z.string() })
+    )
   }),
   custom: z.any(),
 });
@@ -20,10 +23,11 @@ export const DeepSeekCandidateSchema = z.object({
 export type DeepSeekCandidate = z.infer<typeof DeepSeekCandidateSchema>;
 
 export function fromDeepSeekChunkChoice(choice: any): DeepSeekCandidate {
+  const content = choice.delta?.content || '';
   return DeepSeekCandidateSchema.parse({
     index: choice.index,
     finishReason: choice.finish_reason || 'other',
-    message: { role: 'assistant', text: choice.delta.content },
+    message: { role: 'model',  text: content , content: [{ text: content }] },
     custom: {},
   });
 }
@@ -32,7 +36,7 @@ export function fromDeepSeekChoice(choice: any): DeepSeekCandidate {
   return DeepSeekCandidateSchema.parse({
     index: choice.index,
     finishReason: choice.finish_reason || 'other',
-    message: { role: 'assistant', text: choice.message.content },
+    message: { role: 'model', content: [{ text: choice.message.content }], text: choice.message.content },
     custom: {},
   });
 }
@@ -57,7 +61,7 @@ function toDeepSeekMessages(messages: any[]): ChatCompletionMessageParam[] {
 function toDeepSeekRole(role: string): string {
   // Example: mapping roles. Adjust as necessary.
   if (role === "system") return "system";
-  if (role === "assistant") return "assistant";
+  if (role === "model") return "assistant";
   if (role === "user") return "user";
   if (role === "function") return "function";
   return role;
@@ -97,7 +101,6 @@ export function toDeepSeekRequestBody(
     logprobs: config.logProbs,
     top_logprobs: config.topLogProbs,
     tools: request.tools ? request.tools.map(toDeepSeekTool) : undefined,
-    tool_choice: (config as any).tool_choice || "none",
     response_format: { type: "text" },
     stream: false, 
     stream_options: null,

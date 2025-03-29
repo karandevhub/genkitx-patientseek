@@ -11,46 +11,16 @@ export const DeepSeekConfigSchema = GenerationCommonConfigSchema.extend({
   user: z.string().optional(),
 });
 
-export const deepseekChat = modelRef({
-  name: "deepseek/deepseek-chat",
-  info: {
-    label: "DeepSeek - Chat",
-    supports: {
-      media: false,
-      output: ["text"],
-      multiturn: true,
-      systemRole: true,
-      tools: false,
-    },
-  },
-  configSchema: DeepSeekConfigSchema,
-});
-
-export const deepseekReasoner = modelRef({
-  name: "deepseek/deepseek-reasoner",
-  info: {
-    label: "DeepSeek - Reasoner",
-    supports: {
-      media: false,
-      output: ["text"],
-      multiturn: true,
-      systemRole: true,
-      tools: false,
-    },
-  },
-  configSchema: DeepSeekConfigSchema,
-});
-
-export const whyhowPatientSeek = modelRef({
+export const PatientSeekChat = modelRef({
   name: "deepseek/whyhow-ai/PatientSeek",
   info: {
     label: "Whyhow - PatientSeek",
     supports: {
-      media: false,
-      output: ["text"],
+      media: false, 
+      output: ["text", "json"],
       multiturn: true,
       systemRole: true,
-      tools: false,
+      tools: true,
     },
   },
   configSchema: DeepSeekConfigSchema,
@@ -60,7 +30,5 @@ export const SUPPORTED_DEEPSEEK_MODELS: Record<
   string,
   ModelReference<typeof DeepSeekConfigSchema>
 > = {
-  "deepseek-chat": deepseekChat,
-  "deepseek-reasoner": deepseekReasoner,
-  "whyhow-ai/PatientSeek": whyhowPatientSeek,
+  "whyhow-ai/PatientSeek": PatientSeekChat,
 };
