@@ -1,4 +1,4 @@
-import { PatientSeek, PatientSeekChat } from "./src/index";
+import { PatientSeek, PatientSeekChat } from "./index.js";
 import { genkit} from "genkit";
 import * as dotenv from "dotenv";
 
@@ -15,9 +15,9 @@ const ai = genkit({
 
 (async () => {
   const { text } = await ai.generate({
-    prompt: "what should i do if i have a headache",
+    prompt: "hi",
     system:
-      "You are a helpful assistant Medical Assistant. Your task is to help patients find the best doctors and clinics.",
+      "You are a helpful assistant."
   });
   console.log(text);
 })();

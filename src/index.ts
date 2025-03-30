@@ -1,15 +1,15 @@
-import type { GenerateRequest, Genkit } from "genkit";
+import type {  Genkit } from "genkit";
 import { genkitPlugin } from "genkit/plugin";
 import { OpenAI, ClientOptions } from "openai";
 import { ModelAction, ModelInfo } from "genkit/model";
 import { modelRef } from "genkit/model";
-import { gptRunner } from "./runner";
+import { gptRunner } from "./runner.js";
 import {
   DeepSeekConfigSchema,
   ModelDefinition,
   SUPPORTED_DEEPSEEK_MODELS,
-} from "./models";
-import { PatientSeekChat } from "./models";
+} from "./models.js";
+import { PatientSeekChat } from "./models.js";
 
 export { PatientSeekChat };
 export interface DeepSeekPluginOptions extends Partial<ClientOptions> {

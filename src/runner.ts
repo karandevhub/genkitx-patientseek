@@ -25,8 +25,8 @@ import {
   DeepSeekConfigSchema,
   MODELS_SUPPORTING_OPENAI_RESPONSE_FORMAT,
   SUPPORTED_DEEPSEEK_MODELS,
-} from "./models";
-import { removeEmptyKeys } from "./utils";
+} from "./models.js";
+import { removeEmptyKeys } from "./utils.js";
 
 export function toOpenAIRole(role: Role): ChatCompletionRole {
   switch (role) {
@@ -243,7 +243,6 @@ export function toOpenAiRequestBody(
   } as ChatCompletionCreateParamsNonStreaming;
 
   const response_format = request.output?.format;
-  console.log("Using json_object response format", request);
   if (
     response_format &&
     MODELS_SUPPORTING_OPENAI_RESPONSE_FORMAT.includes(mappedModelName)
