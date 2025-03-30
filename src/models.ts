@@ -28,7 +28,7 @@ export const PatientSeekChat = modelRef({
     label: "Whyhow - PatientSeek",
     supports: {
       media: false,
-      output: ["text", "json"],
+      output: ["text"],
       multiturn: true,
       systemRole: true,
       tools: false,

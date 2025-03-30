@@ -1,5 +1,5 @@
 import { PatientSeek, PatientSeekChat } from "./index.js";
-import { genkit} from "genkit";
+import { genkit, z} from "genkit";
 import * as dotenv from "dotenv";
 
 dotenv.config();
@@ -10,14 +10,13 @@ const ai = genkit({
       apiKey: process.env.PATIENT_SEEK_API_KEY,
     }),
   ],
-  model: PatientSeekChat,
 });
 
 (async () => {
   const { text } = await ai.generate({
     prompt: "hi",
-    system:
-      "You are a helpful assistant."
+    system:"You are a helpful assistant.",
+    model: PatientSeekChat
   });
   console.log(text);
 })();
