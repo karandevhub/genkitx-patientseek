@@ -4,7 +4,7 @@
 
 <h4 align="center">A Community Plugin for Google Firebase Genkit</h4>
 
-**`genkitx-patientseek`** is a community plugin designed to integrate OpenAI APIs with [Firebase Genkit](https://github.com/firebase/genkit). Built and maintained by [**The Fire Company**](https://github.com/TheFireCo). 🔥
+**`genkitx-patientseek`** is a community plugin designed to integrate OpenAI APIs with [Firebase Genkit](https://github.com/firebase/genkit).🔥
 
 This plugin enables seamless interaction with OpenAI models through their official APIs, providing robust capabilities for medical-assistant tasks.
 
@@ -85,9 +85,7 @@ const ai = genkit({
 
 ## 🌟 Contributing
 
-Want to contribute? We'd love your help! Check out our [Contribution Guidelines](https://github.com/TheFireCo/genkit-plugins/blob/main/CONTRIBUTING.md) to get started.
-
-For support or feedback, contact us at **team@whyhow.ai**.
+Want to contribute? We'd love your help! Check out our [Contribution Guidelines](https://github.com/karandevhub/genkitx-patientseek/blob/main/README.md) to get started.
 
 Happy coding! 🚀
 
