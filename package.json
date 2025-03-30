@@ -1,17 +1,21 @@
 {
   "name": "genkitx-patientseek",
   "version": "0.1.0",
+  "description": "A community plugin for Firebase Genkit to integrate DeepSeek medical models.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "genkit-plugin",
-    "genkit-model"
+    "genkit-model",
+    "firebase",
+    "medical-ai"
   ],
-  "author": "",
-  "license": "ISC",
+  "author": "karan kumar",
   "type": "commonjs",
   "dependencies": {
     "dotenv": "^16.4.7",

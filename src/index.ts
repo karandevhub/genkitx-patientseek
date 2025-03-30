@@ -1,4 +1,4 @@
-import type { Genkit } from "genkit";
+import type { GenerateRequest, Genkit } from "genkit";
 import { genkitPlugin } from "genkit/plugin";
 import { OpenAI, ClientOptions } from "openai";
 import { ModelAction, ModelInfo } from "genkit/model";

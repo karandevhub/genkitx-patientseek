@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "target": "es2016",                                  
-    "module":"NodeNext",                               /* Changed from "Node16" to "CommonJS" */
-    "esModuleInterop": true,                            /* Still recommended for CommonJS compatibility */
+    "module":"NodeNext",                          
+    "esModuleInterop": true,                           
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true

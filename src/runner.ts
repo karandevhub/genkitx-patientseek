@@ -26,6 +26,7 @@ import {
   MODELS_SUPPORTING_OPENAI_RESPONSE_FORMAT,
   SUPPORTED_DEEPSEEK_MODELS,
 } from "./models";
+import { removeEmptyKeys } from "./utils";
 
 export function toOpenAIRole(role: Role): ChatCompletionRole {
   switch (role) {
@@ -220,7 +221,6 @@ export function toOpenAiRequestBody(
   modelName: string,
   request: GenerateRequest<typeof DeepSeekConfigSchema>
 ) {
-  console.log("toOpenAiRequestBody", modelName, request);
   const model = SUPPORTED_DEEPSEEK_MODELS[modelName];
   if (!model) throw new Error(`Unsupported model: ${modelName}`);
   const openAiMessages = toOpenAiMessages(request.messages);
@@ -243,6 +243,7 @@ export function toOpenAiRequestBody(
   } as ChatCompletionCreateParamsNonStreaming;
 
   const response_format = request.output?.format;
+  console.log("Using json_object response format", request);
   if (
     response_format &&
     MODELS_SUPPORTING_OPENAI_RESPONSE_FORMAT.includes(mappedModelName)
@@ -252,7 +253,10 @@ export function toOpenAiRequestBody(
       model.info?.supports?.output?.includes("json")
     ) {
       body.response_format = {
-        type: "json_object",
+        type: "json_schema",
+        json_schema: {name:"default", strict: true, description: "default", schema: {type: "object", properties: {
+          text: {type: "string"}
+        }}},
       };
     } else if (
       response_format === "text" &&
@@ -268,13 +272,7 @@ export function toOpenAiRequestBody(
     }
   }
 
-  Object.keys(body).forEach((key) => {
-    const typedKey = key as keyof ChatCompletionCreateParamsNonStreaming;
-    const value = body[typedKey];
-    if (!value || (Array.isArray(value) && value.length === 0)) {
-      delete body[typedKey];
-    }
-  });
+  removeEmptyKeys(body);
   return body;
 }
 
@@ -286,23 +284,72 @@ export function gptRunner(name: string, client: OpenAI) {
     let response: ChatCompletion;
     const body = toOpenAiRequestBody(name, request);
     if (streamingCallback) {
-      const stream = client.beta.chat.completions.stream({
+      const streamResponse = await client.chat.completions.create({
         ...body,
         stream: true,
       });
-      for await (const chunk of stream) {
-        chunk.choices?.forEach((chunk) => {
-          const c = fromOpenAiChunkChoice(chunk);
-          streamingCallback({
-            index: c.index,
-            content: c.message.content,
-          });
-        });
+
+      let accumulatedContent = "";
+      let accumulatedReasoningContent = "";
+      let currentIndex = 0;
+
+      try {
+        for await (const chunk of streamResponse) {
+          if (chunk.choices && chunk.choices.length > 0) {
+            const choice = chunk.choices[0];
+            currentIndex = choice.index || 0;
+            if (choice.delta) {
+              const deltaAny = choice.delta as any;
+              if (deltaAny.reasoning_content) {
+                accumulatedReasoningContent += deltaAny.reasoning_content;
+                streamingCallback?.({
+                  index: currentIndex,
+                  content: [{ text: deltaAny.reasoning_content }],
+                  custom: { isReasoning: true }
+                });
+              }
+              if (choice.delta.content) {
+                accumulatedContent += choice.delta.content;
+                
+                streamingCallback?.({
+                  index: currentIndex,
+                  content: [{ text: choice.delta.content }],
+                });
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error processing stream chunk:", error);
       }
-      response = await stream.finalChatCompletion();
+      response = {
+        id: `chatcmpl-${Date.now()}`,
+        object: "chat.completion",
+        created: Math.floor(Date.now() / 1000),
+        model: body.model,
+        choices: [
+          {
+            index: currentIndex,
+            message: {
+              role: "assistant",
+              content: accumulatedContent,
+            },
+            finish_reason: "stop",
+          },
+        ],
+        usage: {
+          prompt_tokens: 0,
+          completion_tokens: 0,
+          total_tokens: 0,
+        },
+      } as ChatCompletion;
+      if (accumulatedReasoningContent) {
+        (response as any).reasoning_content = accumulatedReasoningContent;
+      }
     } else {
       response = await client.chat.completions.create(body);
     }
+    
     return {
       candidates: response.choices.map((c) =>
         fromOpenAiChoice(c, request.output?.format === "json")
@@ -312,7 +359,10 @@ export function gptRunner(name: string, client: OpenAI) {
         outputTokens: response.usage?.completion_tokens,
         totalTokens: response.usage?.total_tokens,
       },
-      custom: response,
+      custom: {
+        ...response,
+        reasoning_content: (response as any).reasoning_content
+      },
     };
   };
 }

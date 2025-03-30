@@ -14,6 +14,7 @@ export interface ModelDefinition {
 
 export const DeepSeekConfigSchema = GenerationCommonConfigSchema.extend({
   frequencyPenalty: z.number().min(-2).max(2).optional(),
+  logitBias: z.record(z.string(), z.number().min(-100).max(100)).optional(),
   logProbs: z.boolean().optional(),
   presencePenalty: z.number().min(-2).max(2).optional(),
   seed: z.number().int().optional(),
