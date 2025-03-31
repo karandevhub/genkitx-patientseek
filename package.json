@@ -1,6 +1,6 @@
 {
   "name": "genkitx-patientseek",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "A community plugin for Firebase Genkit to integrate DeepSeek medical models.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
