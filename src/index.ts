@@ -1,5 +1,5 @@
-import type {  Genkit } from "genkit";
-import { genkitPlugin } from "genkit/plugin";
+import type { Genkit } from "genkit";
+import { GenkitPlugin, genkitPlugin } from "genkit/plugin";
 import { OpenAI, ClientOptions } from "openai";
 import { ModelAction, ModelInfo } from "genkit/model";
 import { modelRef } from "genkit/model";
@@ -18,7 +18,9 @@ export interface DeepSeekPluginOptions extends Partial<ClientOptions> {
   models?: ModelDefinition[];
 }
 
-export const PatientSeek = (options: DeepSeekPluginOptions) =>
+export const PatientSeek: (options: DeepSeekPluginOptions) => GenkitPlugin = (
+  options
+) =>
   genkitPlugin("deepseek", async (ai: Genkit) => {
     const baseURL =
       options?.baseURL ||
